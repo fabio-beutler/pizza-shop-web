@@ -3,5 +3,12 @@
   "plugins": ["simple-import-sort"],
   "rules": {
     "simple-import-sort/imports": "error"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"]
+      }
+    }
   }
 }
