@@ -5,7 +5,16 @@ import ReactDOM from 'react-dom/client'
 
 import { App } from './App.tsx'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+let rootElement = document.getElementById('root')
+
+if (rootElement === null) {
+  const root = document.createElement('div')
+  root.id = 'root'
+  document.body.appendChild(root)
+  rootElement = root
+}
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
