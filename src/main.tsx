@@ -2,8 +2,9 @@ import '@/global.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { RouterProvider } from 'react-router-dom'
 
-import { App } from './App.tsx'
+import { router } from '@/router.tsx'
 
 let rootElement = document.getElementById('root')
 
@@ -16,6 +17,6 @@ if (rootElement === null) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )
