@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { RouterProvider } from 'react-router-dom'
 
+import { Toaster } from '@/components/ui/sonner'
 import { router } from '@/router.tsx'
 
 let rootElement = document.getElementById('root')
@@ -21,6 +22,7 @@ ReactDOM.createRoot(rootElement).render(
     <HelmetProvider>
       <Helmet titleTemplate="%s | pizza.shop" />
       <RouterProvider router={router} />
+      <Toaster richColors />
     </HelmetProvider>
   </React.StrictMode>,
 )
