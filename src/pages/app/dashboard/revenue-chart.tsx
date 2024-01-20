@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   CartesianGrid,
   Line,
@@ -28,6 +29,8 @@ const data = [
 ]
 
 export function RevenueChart() {
+  const [chartWidth, setChartWidth] = useState(0)
+
   return (
     <Card className="col-span-6">
       <CardHeader className="space-y-1 pb-8">
@@ -37,10 +40,15 @@ export function RevenueChart() {
         <CardDescription>Receita diária no período</CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={240}>
+        <ResponsiveContainer
+          width="100%"
+          height={240}
+          onResize={(width) => setChartWidth(width)}
+        >
           <LineChart data={data} style={{ fontSize: 12 }}>
             <XAxis dataKey="date" tickLine={false} axisLine={false} dy={16} />
             <YAxis
+              dataKey="revenue"
               stroke={colors.neutral['500']}
               axisLine={false}
               tickLine={false}
@@ -52,11 +60,29 @@ export function RevenueChart() {
                 })
               }
             />
+            <CartesianGrid vertical={false} className="stroke-muted" />
             <Line
               type="linear"
               strokeWidth={2}
               dataKey="revenue"
               stroke={colors.violet['500']}
+            />
+            <Tooltip
+              cursor={false}
+              contentStyle={{
+                background: `transparent`,
+                border: 'none',
+              }}
+              position={{ x: chartWidth - 128, y: -60 }}
+              animationDuration={1000}
+              formatter={(value: number) => [
+                value.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                }),
+                'Receita',
+              ]}
+              labelFormatter={(value: string) => `Dia: ${value}`}
             />
           </LineChart>
         </ResponsiveContainer>
