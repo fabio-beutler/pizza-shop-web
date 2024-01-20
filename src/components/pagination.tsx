@@ -32,7 +32,7 @@ export function PaginationBottom({
   siblingsCount = 1,
 }: PaginationImpProps) {
   const currentPage = pageIndex + 1
-  const totalPages = Math.ceil(totalCount / perPage) || 1
+  // const totalPages = Math.ceil(totalCount / perPage) || 1
   const lastPage = Math.floor(totalCount / perPage)
 
   const previousPages =
