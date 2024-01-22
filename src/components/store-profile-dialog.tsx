@@ -1,12 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-import { getManagedRestaurant } from '@/api/get-managed-restaurant'
+import {
+  getManagedRestaurant,
+  GetManagedRestaurantResponse,
+} from '@/api/get-managed-restaurant'
 import { updateStoreProfile } from '@/api/update-store-profile'
-import { Button } from '@/components/ui/button'
+import { Button, ButtonLoading } from '@/components/ui/button'
 import {
   DialogClose,
   DialogContent,
@@ -31,6 +34,8 @@ const storeProfileSchema = z.object({
 type StoreProfileSchema = z.infer<typeof storeProfileSchema>
 
 export function StoreProfileDialog(props: StoreProfileDialogProps) {
+  const queryClient = useQueryClient()
+
   const { data: storeProfile } = useQuery({
     queryKey: ['managed-restaurant'],
     queryFn: getManagedRestaurant,
@@ -47,6 +52,17 @@ export function StoreProfileDialog(props: StoreProfileDialogProps) {
 
   const { mutateAsync: updateStoreProfileFn } = useMutation({
     mutationFn: updateStoreProfile,
+    onMutate: () => {
+      return { id: 1 }
+    },
+    onSuccess: (_, variables) => {
+      queryClient.setQueryData<GetManagedRestaurantResponse>(
+        ['managed-restaurant'],
+        (old) => {
+          if (old) return { ...old, ...variables }
+        },
+      )
+    },
   })
 
   async function handleUpdateStoreProfile(data: StoreProfileSchema) {
@@ -99,13 +115,15 @@ export function StoreProfileDialog(props: StoreProfileDialogProps) {
               Cancelar
             </Button>
           </DialogClose>
-          <Button
-            type="submit"
-            variant={'success'}
-            disabled={formState.isSubmitting}
-          >
-            Salvar
-          </Button>
+          {formState.isSubmitting ? (
+            <ButtonLoading variant={'success'} className="min-w-32">
+              Salvando...
+            </ButtonLoading>
+          ) : (
+            <Button type="submit" variant={'success'} className="min-w-32">
+              Salvar
+            </Button>
+          )}
         </DialogFooter>
       </form>
     </DialogContent>
