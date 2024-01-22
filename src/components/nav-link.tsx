@@ -10,7 +10,7 @@ export function NavLink(props: NavLinkProps) {
       className={({ isActive }) =>
         cn(
           'flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground',
-          isActive && 'text-foreground',
+          { 'text-foreground': isActive },
         )
       }
       {...props}
