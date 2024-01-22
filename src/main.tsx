@@ -1,5 +1,6 @@
 import '@/global.css'
 
+import { QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
@@ -7,6 +8,7 @@ import { RouterProvider } from 'react-router-dom'
 
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { queryClient } from '@/lib/react-query'
 import { router } from '@/router.tsx'
 
 let rootElement = document.getElementById('root')
@@ -20,12 +22,14 @@ if (rootElement === null) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ThemeProvider storageKey="@pizzashop-theme">
-      <HelmetProvider>
-        <Helmet titleTemplate="%s | pizza.shop" />
-        <RouterProvider router={router} />
+    <HelmetProvider>
+      <Helmet titleTemplate="%s | pizza.shop" />
+      <ThemeProvider storageKey="@pizzashop-theme">
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
         <Toaster richColors />
-      </HelmetProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   </React.StrictMode>,
 )
