@@ -18,17 +18,17 @@ export function OrderTableFilters() {
         type="text"
         placeholder="ID do pedido"
         className="h-8 w-auto"
+        id="orderId"
         autoComplete="off"
-        aria-autocomplete="none"
       />
       <Input
         type="text"
         placeholder="Nome do cliente"
         className="h-8 w-80"
+        id="customerName"
         autoComplete="off"
-        aria-autocomplete="none"
       />
-      <Select defaultValue="all">
+      <Select name="orderStatus" defaultValue="all">
         <SelectTrigger className="h-8 w-44">
           <SelectValue />
         </SelectTrigger>
