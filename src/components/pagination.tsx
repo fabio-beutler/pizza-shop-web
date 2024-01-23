@@ -15,6 +15,7 @@ export interface PaginationImpProps {
   totalCount: number
   perPage: number
   siblingsCount?: number
+  onPageChange: (pageIndex: number) => Promise<void> | void
 }
 
 function generatePagesArray(from: number, to: number) {
@@ -30,9 +31,10 @@ export function PaginationBottom({
   totalCount,
   perPage,
   siblingsCount = 1,
+  onPageChange,
 }: PaginationImpProps) {
   const currentPage = pageIndex + 1
-  // const totalPages = Math.ceil(totalCount / perPage) || 1
+  const totalPages = Math.ceil(totalCount / perPage) || 1
   const lastPage = Math.floor(totalCount / perPage)
 
   const previousPages =
@@ -62,10 +64,16 @@ export function PaginationBottom({
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationFirst to="#" />
+              <PaginationFirst
+                disabled={pageIndex === 0}
+                onClick={() => onPageChange(0)}
+              />
             </PaginationItem>
             <PaginationItem>
-              <PaginationPrevious to="#" />
+              <PaginationPrevious
+                disabled={pageIndex === 0}
+                onClick={() => onPageChange(pageIndex - 1)}
+              />
             </PaginationItem>
 
             {currentPage > 2 + siblingsCount && (
@@ -77,20 +85,22 @@ export function PaginationBottom({
             {previousPages.length > 0 &&
               previousPages.map((page) => (
                 <PaginationItem key={page}>
-                  <PaginationLink to="#">{page}</PaginationLink>
+                  <PaginationLink onClick={() => onPageChange(page - 1)}>
+                    {page}
+                  </PaginationLink>
                 </PaginationItem>
               ))}
 
             <PaginationItem>
-              <PaginationLink to="#" isActive>
-                {currentPage}
-              </PaginationLink>
+              <PaginationLink isActive>{currentPage}</PaginationLink>
             </PaginationItem>
 
             {nextPages.length > 0 &&
               nextPages.map((page) => (
                 <PaginationItem key={page}>
-                  <PaginationLink to="#">{page}</PaginationLink>
+                  <PaginationLink onClick={() => onPageChange(page - 1)}>
+                    {page}
+                  </PaginationLink>
                 </PaginationItem>
               ))}
 
@@ -101,10 +111,16 @@ export function PaginationBottom({
             )}
 
             <PaginationItem>
-              <PaginationNext to="#" />
+              <PaginationNext
+                disabled={totalPages <= pageIndex + 1}
+                onClick={() => onPageChange(pageIndex + 1)}
+              />
             </PaginationItem>
             <PaginationItem>
-              <PaginationLast to="#" />
+              <PaginationLast
+                disabled={totalPages <= pageIndex + 1}
+                onClick={() => onPageChange(totalPages - 1)}
+              />
             </PaginationItem>
           </PaginationContent>
         </Pagination>
