@@ -52,9 +52,6 @@ export function StoreProfileDialog(props: StoreProfileDialogProps) {
 
   const { mutateAsync: updateStoreProfileFn } = useMutation({
     mutationFn: updateStoreProfile,
-    onMutate: () => {
-      return { id: 1 }
-    },
     onSuccess: (_, variables) => {
       queryClient.setQueryData<GetManagedRestaurantResponse>(
         ['managed-restaurant'],

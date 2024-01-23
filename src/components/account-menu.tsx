@@ -1,9 +1,11 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Building, ChevronDown, LogOut } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { getManagedRestaurant } from '@/api/get-managed-restaurant'
 import { getProfile } from '@/api/get-profile'
+import { signOut } from '@/api/sign-out'
 import { StoreProfileDialog } from '@/components/store-profile-dialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
@@ -20,6 +22,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 export function AccountMenu() {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
 
+  const navigate = useNavigate()
+
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ['profile'],
     queryFn: getProfile,
@@ -31,6 +35,15 @@ export function AccountMenu() {
     queryFn: getManagedRestaurant,
     staleTime: Infinity,
   })
+
+  const { mutateAsync: signOutMutation, isPending: isSigningOut } = useMutation(
+    {
+      mutationFn: signOut,
+      onSuccess: () => {
+        navigate('/sign-in', { replace: true })
+      },
+    },
+  )
 
   return (
     <Dialog open={accountMenuOpen} onOpenChange={setAccountMenuOpen}>
@@ -68,12 +81,19 @@ export function AccountMenu() {
           <DialogTrigger asChild>
             <DropdownMenuItem>
               <Building className="mr-2 size-4" />
-              <span>Perfil da loja</span>
+              Perfil da loja
             </DropdownMenuItem>
           </DialogTrigger>
-          <DropdownMenuItem className="text-rose-500 dark:text-rose-400">
+          <DropdownMenuItem
+            onSelect={(event) => {
+              event.preventDefault()
+              signOutMutation()
+            }}
+            disabled={isSigningOut}
+            className="text-rose-500 dark:text-rose-400"
+          >
             <LogOut className="mr-2 size-4" />
-            <span>Sair</span>
+            {isSigningOut ? 'Saindo...' : 'Sair'}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
