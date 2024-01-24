@@ -33,17 +33,15 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
     onSuccess: async (_, variables) => {
       queryClient.setQueriesData<GetOrdersResponse>(
         { queryKey: ['orders'] },
-        (old) => {
-          if (old)
-            return {
-              ...old,
-              orders: old.orders.map((order) => {
-                if (order.orderId === variables) {
-                  return { ...order, status: 'canceled' }
-                }
-                return order
-              }),
-            }
+        (cached) => {
+          if (!cached) return
+          return {
+            ...cached,
+            orders: cached.orders.map((order) => {
+              if (order.orderId !== variables) return order
+              return { ...order, status: 'canceled' }
+            }),
+          }
         },
       )
     },
