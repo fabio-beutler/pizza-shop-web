@@ -4,14 +4,26 @@ import { ptBR } from 'date-fns/locale'
 import { ArrowRight, Search, X } from 'lucide-react'
 import { useState } from 'react'
 
-import { cancelOrder } from '@/api/cancel-order'
 import { GetOrdersResponse } from '@/api/get-orders'
+import { updateOrderStatus } from '@/api/update-order-status'
 import { Button, ButtonLoading } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 
 import { OrderDetails } from './order-details'
 import { OrderStatus } from './order-status'
+
+enum NextStepOrderStatus {
+  pending = 'processing',
+  processing = 'delivering',
+  delivering = 'delivered',
+}
+
+enum NextStepOrderStatusText {
+  pending = 'Aprovar',
+  processing = 'Em entrega',
+  delivering = 'Entregue',
+}
 
 export interface OrderTableRowProps {
   order: {
@@ -25,12 +37,17 @@ export interface OrderTableRowProps {
 
 export function OrderTableRow({ order }: OrderTableRowProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-
   const queryClient = useQueryClient()
 
-  const { mutateAsync: cancelOrderFn, isPending } = useMutation({
-    mutationFn: cancelOrder,
-    onSuccess: async (_, variables) => {
+  const hasNextStep =
+    order.status === 'pending' ||
+    order.status === 'processing' ||
+    order.status === 'delivering'
+
+  const updateOrderMutation = useMutation({
+    mutationKey: ['update-order-status', order.orderId],
+    mutationFn: updateOrderStatus,
+    onSuccess: async (_, { orderId, status }) => {
       queryClient.setQueriesData<GetOrdersResponse>(
         { queryKey: ['orders'] },
         (cached) => {
@@ -38,8 +55,8 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
           return {
             ...cached,
             orders: cached.orders.map((order) => {
-              if (order.orderId !== variables) return order
-              return { ...order, status: 'canceled' }
+              if (order.orderId !== orderId) return order
+              return { ...order, status }
             }),
           }
         },
@@ -81,20 +98,59 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
         })}
       </TableCell>
       <TableCell>
-        <Button variant="outline" size="xs">
-          <ArrowRight className="mr-2 size-3" />
-          Aprovar
-        </Button>
+        {hasNextStep &&
+          (Object.values(NextStepOrderStatus).includes(
+            updateOrderMutation.variables?.status as NextStepOrderStatus,
+          ) && updateOrderMutation.isPending ? (
+            <ButtonLoading disabled variant="outline" size="xs">
+              {
+                NextStepOrderStatusText[
+                  order.status as keyof typeof NextStepOrderStatus
+                ]
+              }
+            </ButtonLoading>
+          ) : (
+            <Button
+              onClick={() =>
+                updateOrderMutation.mutate({
+                  orderId: order.orderId,
+                  status:
+                    NextStepOrderStatus[
+                      order.status as keyof typeof NextStepOrderStatus
+                    ],
+                })
+              }
+              variant="outline"
+              size="xs"
+            >
+              <ArrowRight className="mr-2 size-3" />
+              {
+                NextStepOrderStatusText[
+                  order.status as keyof typeof NextStepOrderStatus
+                ]
+              }
+            </Button>
+          ))}
       </TableCell>
       <TableCell>
-        {isPending ? (
+        {updateOrderMutation.variables?.status === 'canceled' &&
+        updateOrderMutation.isPending ? (
           <ButtonLoading disabled variant="ghost" size="xs">
             Cancelando
           </ButtonLoading>
         ) : (
           <Button
-            disabled={!['pending', 'processing'].includes(order.status)}
-            onClick={() => cancelOrderFn(order.orderId)}
+            disabled={
+              !['pending', 'processing'].includes(order.status) ||
+              (updateOrderMutation.variables?.status === 'canceled' &&
+                updateOrderMutation.isPending)
+            }
+            onClick={() =>
+              updateOrderMutation.mutate({
+                orderId: order.orderId,
+                status: 'canceled',
+              })
+            }
             variant="ghost"
             size="xs"
           >
