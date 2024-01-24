@@ -58,7 +58,7 @@ export function Orders() {
                   <TableHead>Cliente</TableHead>
                   <TableHead className="w-40">Total do pedido</TableHead>
                   <TableHead className="w-40"></TableHead>
-                  <TableHead className="w-36"></TableHead>
+                  <TableHead className="w-40"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

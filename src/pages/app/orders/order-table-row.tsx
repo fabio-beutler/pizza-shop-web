@@ -1,9 +1,12 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { ArrowRight, Search, X } from 'lucide-react'
 import { useState } from 'react'
 
-import { Button } from '@/components/ui/button'
+import { cancelOrder } from '@/api/cancel-order'
+import { GetOrdersResponse } from '@/api/get-orders'
+import { Button, ButtonLoading } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 
@@ -22,6 +25,29 @@ export interface OrderTableRowProps {
 
 export function OrderTableRow({ order }: OrderTableRowProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+
+  const queryClient = useQueryClient()
+
+  const { mutateAsync: cancelOrderFn, isPending } = useMutation({
+    mutationFn: cancelOrder,
+    onSuccess: async (_, variables) => {
+      queryClient.setQueriesData<GetOrdersResponse>(
+        { queryKey: ['orders'] },
+        (old) => {
+          if (old)
+            return {
+              ...old,
+              orders: old.orders.map((order) => {
+                if (order.orderId === variables) {
+                  return { ...order, status: 'canceled' }
+                }
+                return order
+              }),
+            }
+        },
+      )
+    },
+  })
 
   return (
     <TableRow>
@@ -63,10 +89,21 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
         </Button>
       </TableCell>
       <TableCell>
-        <Button variant="ghost" size="xs">
-          <X className="mr-2 size-3" />
-          Cancelar
-        </Button>
+        {isPending ? (
+          <ButtonLoading disabled variant="ghost" size="xs">
+            Cancelando
+          </ButtonLoading>
+        ) : (
+          <Button
+            disabled={!['pending', 'processing'].includes(order.status)}
+            onClick={() => cancelOrderFn(order.orderId)}
+            variant="ghost"
+            size="xs"
+          >
+            <X className="mr-2 size-3" />
+            Cancelar
+          </Button>
+        )}
       </TableCell>
     </TableRow>
   )

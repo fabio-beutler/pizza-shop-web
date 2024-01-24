@@ -1,6 +1,7 @@
 import '@/global.css'
 
 import { QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
@@ -27,6 +28,7 @@ ReactDOM.createRoot(rootElement).render(
       <ThemeProvider storageKey="@pizzashop-theme">
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
+          <ReactQueryDevtools buttonPosition="bottom-left" />
         </QueryClientProvider>
         <Toaster richColors />
       </ThemeProvider>
