@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
+import { OrderDetailsSkeleton } from './order-details-skeleton'
 import { OrderStatus } from './order-status'
 
 export interface OrderDetailsProps {
@@ -27,7 +28,11 @@ export interface OrderDetailsProps {
 }
 
 export function OrderDetails(props: OrderDetailsProps) {
-  const { data: order, isLoading } = useQuery({
+  const {
+    data: order,
+    isLoading,
+    isSuccess,
+  } = useQuery({
     queryKey: ['order', props.orderId],
     queryFn: () => getOrderDetails({ orderId: props.orderId }),
     enabled: props.open,
@@ -40,7 +45,7 @@ export function OrderDetails(props: OrderDetailsProps) {
         <DialogDescription>Detalhes do pedido</DialogDescription>
       </DialogHeader>
 
-      {order && (
+      {isSuccess && (
         <div className="space-y-6">
           <Table>
             <TableBody>
@@ -130,6 +135,7 @@ export function OrderDetails(props: OrderDetailsProps) {
           </Table>
         </div>
       )}
+      {isLoading && <OrderDetailsSkeleton />}
     </DialogContent>
   )
 }
