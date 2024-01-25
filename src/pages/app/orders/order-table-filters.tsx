@@ -83,7 +83,11 @@ export function OrderTableFilters() {
       urlState.set('page', '1')
       return urlState
     })
-    reset()
+    reset({
+      orderId: '',
+      customerName: '',
+      status: 'all',
+    })
   }
 
   return (
