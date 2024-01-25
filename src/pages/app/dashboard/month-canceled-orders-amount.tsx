@@ -4,8 +4,15 @@ import { CircleSlash } from 'lucide-react'
 import { getMonthCanceledOrdersAmount } from '@/api/get-month-canceled-orders-amount'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
+import { MetricCardSkeleton } from './metric-card-skeleton'
+
 export function MonthCanceledOrdersAmountCard() {
-  const { data: monthCanceledOrdersAmount } = useQuery({
+  const {
+    data: monthCanceledOrdersAmount,
+    isError,
+    isLoading,
+    isSuccess,
+  } = useQuery({
     queryKey: ['metrics', 'month-canceled-orders-amount'],
     queryFn: getMonthCanceledOrdersAmount,
   })
@@ -18,7 +25,7 @@ export function MonthCanceledOrdersAmountCard() {
         <CircleSlash className="size-4 text-muted-foreground" />
       </CardHeader>
       <CardContent className="space-y-1">
-        {monthCanceledOrdersAmount && (
+        {isSuccess && (
           <>
             <span className="text-2xl font-bold tracking-tight">
               {monthCanceledOrdersAmount.amount.toLocaleString('pt-BR')}
@@ -37,6 +44,8 @@ export function MonthCanceledOrdersAmountCard() {
             </p>
           </>
         )}
+        {isLoading && <MetricCardSkeleton />}
+        {isError && <h3>Erro ao carregar</h3>}
       </CardContent>
     </Card>
   )
