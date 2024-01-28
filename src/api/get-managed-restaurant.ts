@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query'
+
 import { api } from '@/lib/axios'
 
 export interface GetManagedRestaurantResponse {
@@ -14,4 +16,12 @@ export async function getManagedRestaurant() {
     '/managed-restaurant',
   )
   return response.data
+}
+
+export function useGetManagedRestaurantQuery() {
+  return useQuery({
+    queryKey: ['managed-restaurant'],
+    queryFn: getManagedRestaurant,
+    staleTime: Infinity,
+  })
 }
