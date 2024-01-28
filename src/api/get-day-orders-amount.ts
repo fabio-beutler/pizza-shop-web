@@ -14,7 +14,7 @@ async function getDayOrdersAmount() {
   return response.data
 }
 
-export function useGetDayOrdersAmount() {
+export function useGetDayOrdersAmountQuery() {
   return useQuery({
     queryKey: ['metrics', 'day-orders-amount'],
     queryFn: getDayOrdersAmount,

@@ -1,13 +1,13 @@
 import { DollarSign } from 'lucide-react'
 
-import { useGetMonthRevenue } from '@/api/get-month-revenue'
+import { useGetMonthRevenueQuery } from '@/api/get-month-revenue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { currencyFormat } from '@/lib/format'
 
 import { MetricCardSkeleton } from './metric-card-skeleton'
 
 export function MonthRevenueCard() {
-  const getMonthRevenueQuery = useGetMonthRevenue()
+  const getMonthRevenueQuery = useGetMonthRevenueQuery()
 
   return (
     <Card>

@@ -14,7 +14,7 @@ async function getMonthCanceledOrdersAmount() {
   return response.data
 }
 
-export function useGetMonthCanceledOrdersAmount() {
+export function useGetMonthCanceledOrdersAmountQuery() {
   return useQuery({
     queryKey: ['metrics', 'month-canceled-orders-amount'],
     queryFn: getMonthCanceledOrdersAmount,

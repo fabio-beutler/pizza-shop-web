@@ -1,12 +1,12 @@
 import { Utensils } from 'lucide-react'
 
-import { useGetDayOrdersAmount } from '@/api/get-day-orders-amount'
+import { useGetDayOrdersAmountQuery } from '@/api/get-day-orders-amount'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { MetricCardSkeleton } from './metric-card-skeleton'
 
 export function DayOrdersAmountCard() {
-  const getDayOrdersAmountQuery = useGetDayOrdersAmount()
+  const getDayOrdersAmountQuery = useGetDayOrdersAmountQuery()
 
   return (
     <Card>

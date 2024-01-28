@@ -14,7 +14,7 @@ async function getMonthOrdersAmount() {
   return response.data
 }
 
-export function useGetMonthOrdersAmount() {
+export function useGetMonthOrdersAmountQuery() {
   return useQuery({
     queryKey: ['metrics', 'month-orders-amount'],
     queryFn: getMonthOrdersAmount,

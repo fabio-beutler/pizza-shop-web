@@ -14,7 +14,7 @@ async function getMonthRevenue() {
   return response.data
 }
 
-export function useGetMonthRevenue() {
+export function useGetMonthRevenueQuery() {
   return useQuery({
     queryKey: ['metrics', 'month-revenue'],
     queryFn: getMonthRevenue,

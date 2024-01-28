@@ -1,12 +1,12 @@
 import { Utensils } from 'lucide-react'
 
-import { useGetMonthOrdersAmount } from '@/api/get-month-orders-amout'
+import { useGetMonthOrdersAmountQuery } from '@/api/get-month-orders-amout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { MetricCardSkeleton } from './metric-card-skeleton'
 
 export function MonthOrdersAmountCard() {
-  const getMonthOrdersAmountQuery = useGetMonthOrdersAmount()
+  const getMonthOrdersAmountQuery = useGetMonthOrdersAmountQuery()
 
   return (
     <Card>

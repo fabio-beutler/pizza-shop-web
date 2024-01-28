@@ -1,12 +1,13 @@
 import { CircleSlash } from 'lucide-react'
 
-import { useGetMonthCanceledOrdersAmount } from '@/api/get-month-canceled-orders-amount'
+import { useGetMonthCanceledOrdersAmountQuery } from '@/api/get-month-canceled-orders-amount'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { MetricCardSkeleton } from './metric-card-skeleton'
 
 export function MonthCanceledOrdersAmountCard() {
-  const getMonthCanceledOrdersAmountQuery = useGetMonthCanceledOrdersAmount()
+  const getMonthCanceledOrdersAmountQuery =
+    useGetMonthCanceledOrdersAmountQuery()
 
   return (
     <Card>
