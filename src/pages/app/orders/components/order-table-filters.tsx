@@ -1,32 +1,25 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Search, X } from 'lucide-react'
+import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { OrderStatusMap } from '@/types/order-status'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/ui/select'
 
 const orderFiltersSchema = z.object({
   orderId: z.string().optional(),
   customerName: z.string().optional(),
-  status: z
-    .enum([
-      'all',
-      'pending',
-      'canceled',
-      'processing',
-      'delivering',
-      'delivered',
-    ])
-    .optional(),
+  status: z.enum(['all', ...Object.keys(OrderStatusMap)]).default('all'),
 })
 
 type OrderFiltersSchema = z.infer<typeof orderFiltersSchema>
@@ -34,48 +27,17 @@ type OrderFiltersSchema = z.infer<typeof orderFiltersSchema>
 export function OrderTableFilters() {
   const [searchParams, setSearchParams] = useSearchParams()
 
+  const searchFilterQueryParams = orderFiltersSchema.parse(
+    Object.fromEntries(searchParams.entries()),
+  )
+
   const { register, handleSubmit, control, reset } =
     useForm<OrderFiltersSchema>({
       resolver: zodResolver(orderFiltersSchema),
-      defaultValues: {
-        status:
-          (searchParams.get('status') as OrderFiltersSchema['status']) ?? 'all',
-        orderId:
-          (searchParams.get('orderId') as OrderFiltersSchema['orderId']) ?? '',
-        customerName:
-          (searchParams.get(
-            'customerName',
-          ) as OrderFiltersSchema['customerName']) ?? '',
-      },
+      defaultValues: searchFilterQueryParams,
     })
 
-  function handleFilter(data: OrderFiltersSchema) {
-    setSearchParams((urlState) => {
-      if (data.orderId) {
-        urlState.set('orderId', data.orderId)
-      } else {
-        urlState.delete('orderId')
-      }
-
-      if (data.customerName) {
-        urlState.set('customerName', data.customerName)
-      } else {
-        urlState.delete('customerName')
-      }
-
-      if (data.status && data.status !== 'all') {
-        urlState.set('status', data.status)
-      } else {
-        urlState.delete('status')
-      }
-
-      urlState.set('page', '1')
-
-      return urlState
-    })
-  }
-
-  function handleClearFilters() {
+  function clearUrlState() {
     setSearchParams((urlState) => {
       urlState.delete('orderId')
       urlState.delete('customerName')
@@ -83,6 +45,20 @@ export function OrderTableFilters() {
       urlState.set('page', '1')
       return urlState
     })
+  }
+
+  function handleFilter(data: OrderFiltersSchema) {
+    clearUrlState()
+    setSearchParams((urlState) => {
+      Object.entries(data).forEach(([key, value]) => {
+        if (value) urlState.set(key, value)
+      })
+      return urlState
+    })
+  }
+
+  function handleClearFilters() {
+    clearUrlState()
     reset({
       orderId: '',
       customerName: '',
