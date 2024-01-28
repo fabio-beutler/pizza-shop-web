@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom'
 import { getManagedRestaurant } from '@/api/get-managed-restaurant'
 import { getProfile } from '@/api/get-profile'
 import { signOut } from '@/api/sign-out'
-import { StoreProfileDialog } from '@/components/store-profile-dialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import {
@@ -18,6 +17,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
+
+import { StoreProfileDialog } from './store-profile-dialog'
 
 export function AccountMenu() {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)

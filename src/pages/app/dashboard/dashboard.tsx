@@ -1,11 +1,13 @@
 import { Helmet } from 'react-helmet-async'
 
-import { DayOrdersAmountCard } from './day-orders-amount-card'
-import { MonthCanceledOrdersAmountCard } from './month-canceled-orders-amount'
-import { MonthOrdersAmountCard } from './month-orders-amount-card'
-import { MonthRevenueCard } from './month-revenue-card'
-import { PopularProductsChart } from './popular-products-chart'
-import { RevenueChart } from './revenue-chart'
+import {
+  DayOrdersAmountCard,
+  MonthCanceledOrdersAmountCard,
+  MonthOrdersAmountCard,
+  MonthRevenueCard,
+  PopularProductsChart,
+  RevenueChart,
+} from './components'
 
 export function Dashboard() {
   return (

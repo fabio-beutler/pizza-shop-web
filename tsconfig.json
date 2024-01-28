@@ -23,7 +23,8 @@
     /* Absolute paths */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/ui/*": ["./src/components/ui/*"],
+      "@/*": ["./src/*"],
     }
   },
   "include": ["src"],

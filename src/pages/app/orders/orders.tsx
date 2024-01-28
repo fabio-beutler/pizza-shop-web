@@ -4,18 +4,14 @@ import { useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { getOrders } from '@/api/get-orders'
-import { PaginationBottom } from '@/components/pagination'
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { PaginationBottom } from '@/components/shared/pagination'
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/ui/table'
 
-import { OrderTableFilters } from './order-table-filters'
-import { OrderTableRow } from './order-table-row'
-import { OrderTableSkeleton } from './order-table-skeleton'
+import {
+  OrderTableFilters,
+  OrderTableRow,
+  OrderTableSkeleton,
+} from './components'
 
 export function Orders() {
   const [searchParams, setSearchParams] = useSearchParams()

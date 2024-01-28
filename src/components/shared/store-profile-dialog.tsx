@@ -9,7 +9,7 @@ import {
   GetManagedRestaurantResponse,
 } from '@/api/get-managed-restaurant'
 import { updateStoreProfile } from '@/api/update-store-profile'
-import { Button, ButtonLoading } from '@/components/ui/button'
+import { Button, ButtonLoading } from '@/ui/button'
 import {
   DialogClose,
   DialogContent,
@@ -17,10 +17,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+} from '@/ui/dialog'
+import { Input } from '@/ui/input'
+import { Label } from '@/ui/label'
+import { Textarea } from '@/ui/textarea'
 
 interface StoreProfileDialogProps {
   onCloseDialog: () => void
