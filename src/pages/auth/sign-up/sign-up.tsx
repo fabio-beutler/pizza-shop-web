@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
@@ -11,10 +12,12 @@ import { Input } from '@/ui/input'
 import { Label } from '@/ui/label'
 
 const signUpForm = z.object({
-  restaurantName: z.string(),
-  managerName: z.string(),
-  phone: z.string(),
-  email: z.string().email(),
+  restaurantName: z
+    .string()
+    .min(1, { message: 'Nome do restaurante é obrigatório' }),
+  managerName: z.string().min(1, { message: 'Nome do gerente é obrigatório' }),
+  phone: z.string().min(8, { message: 'Telefone é obrigatório' }),
+  email: z.string().email({ message: 'E-mail inválido' }),
 })
 
 type SignUpForm = z.infer<typeof signUpForm>
@@ -26,23 +29,31 @@ export function SignUp() {
     resolver: zodResolver(signUpForm),
   })
 
+  useEffect(() => {
+    console.log(formState.errors)
+  }, [formState])
+
   const registerRestaurantMutation = useRegisterRestaurantMutation()
 
-  async function handleSignUp(data: SignUpForm) {
-    await registerRestaurantMutation.mutate(data, {
-      onSuccess: () => {
-        toast.success('Restaurante cadastrado com sucesso!', {
-          action: {
-            label: 'Login',
-            onClick: () =>
-              navigate(`/sign-in?email=${encodeURIComponent(data.email)}`),
-          },
-        })
-      },
-      onError: () => {
-        toast.error('Ocorreu um erro ao cadastrar o restaurante')
-      },
-    })
+  function handleSignUp(data: SignUpForm) {
+    try {
+      registerRestaurantMutation.mutate(data, {
+        onSuccess: () => {
+          toast.success('Restaurante cadastrado com sucesso!', {
+            action: {
+              label: 'Login',
+              onClick: () =>
+                navigate(`/sign-in?email=${encodeURIComponent(data.email)}`),
+            },
+          })
+        },
+        onError: () => {
+          toast.error('Ocorreu um erro ao cadastrar o restaurante')
+        },
+      })
+    } catch {
+      console.log('error')
+    }
   }
 
   return (
@@ -62,39 +73,43 @@ export function SignUp() {
             </p>
           </div>
           <form onSubmit={handleSubmit(handleSignUp)} className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="restaurantName">Nome do estabelecimento</Label>
               <Input
                 autoComplete="off"
                 id="restaurantName"
                 type="text"
+                errorMessage={formState.errors.restaurantName?.message}
                 {...register('restaurantName')}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="managerName">Seu nome</Label>
               <Input
                 autoComplete="name"
                 id="managerName"
                 type="text"
+                errorMessage={formState.errors.managerName?.message}
                 {...register('managerName')}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="email">Seu e-mail</Label>
               <Input
                 autoComplete="email"
                 id="email"
                 type="email"
+                errorMessage={formState.errors.email?.message}
                 {...register('email')}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label htmlFor="phone">Seu celular</Label>
               <Input
                 autoComplete="tel"
                 id="phone"
                 type="tel"
+                errorMessage={formState.errors.phone?.message}
                 {...register('phone')}
               />
             </div>
