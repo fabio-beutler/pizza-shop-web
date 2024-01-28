@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query'
+
 import { api } from '@/lib/axios'
 
 export interface GetMonthCanceledOrdersAmountResponse {
@@ -5,9 +7,16 @@ export interface GetMonthCanceledOrdersAmountResponse {
   diffFromLastMonth: number
 }
 
-export async function getMonthCanceledOrdersAmount() {
+async function getMonthCanceledOrdersAmount() {
   const response = await api.get<GetMonthCanceledOrdersAmountResponse>(
     '/metrics/month-canceled-orders-amount',
   )
   return response.data
+}
+
+export function useGetMonthCanceledOrdersAmount() {
+  return useQuery({
+    queryKey: ['metrics', 'month-canceled-orders-amount'],
+    queryFn: getMonthCanceledOrdersAmount,
+  })
 }
