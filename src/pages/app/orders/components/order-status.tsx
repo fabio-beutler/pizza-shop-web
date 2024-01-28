@@ -1,11 +1,6 @@
 import { cva } from 'class-variance-authority'
 
-type OrderStatus =
-  | 'pending'
-  | 'canceled'
-  | 'processing'
-  | 'delivering'
-  | 'delivered'
+import type { OrderStatus } from '@/types/order-status'
 
 interface OrderStatusProps {
   status: OrderStatus

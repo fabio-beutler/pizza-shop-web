@@ -1,9 +1,8 @@
 import { DialogDescription } from '@radix-ui/react-dialog'
-import { useQuery } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-import { getOrderDetails } from '@/api/get-order-details'
+import { useGetOrderDetailsQuery } from '@/api/get-order-details'
 import {
   DialogContent,
   DialogHeader,
@@ -18,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { currencyFormat } from '@/lib/format'
 
 import { OrderDetailsSkeleton } from './order-details-skeleton'
 import { OrderStatus } from './order-status'
@@ -28,14 +28,9 @@ export interface OrderDetailsProps {
 }
 
 export function OrderDetails(props: OrderDetailsProps) {
-  const {
-    data: order,
-    isLoading,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['order', props.orderId],
-    queryFn: () => getOrderDetails({ orderId: props.orderId }),
-    enabled: props.open,
+  const getOrderDetailsQuery = useGetOrderDetailsQuery({
+    orderId: props.orderId,
+    open: props.open,
   })
 
   return (
@@ -44,21 +39,21 @@ export function OrderDetails(props: OrderDetailsProps) {
         <DialogTitle>Pedido: {props.orderId}</DialogTitle>
         <DialogDescription>Detalhes do pedido</DialogDescription>
       </DialogHeader>
-
-      {isSuccess && (
+      {getOrderDetailsQuery.isLoading && <OrderDetailsSkeleton />}
+      {getOrderDetailsQuery.isSuccess && (
         <div className="space-y-6">
           <Table>
             <TableBody>
               <TableRow>
                 <TableCell className="text-muted-foreground">Status</TableCell>
                 <TableCell className="flex justify-end">
-                  <OrderStatus status={order.status} />
+                  <OrderStatus status={getOrderDetailsQuery.data.status} />
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="text-muted-foreground">Cliente</TableCell>
                 <TableCell className="flex justify-end">
-                  {order.customer.name}
+                  {getOrderDetailsQuery.data.customer.name}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -66,13 +61,13 @@ export function OrderDetails(props: OrderDetailsProps) {
                   Telefone
                 </TableCell>
                 <TableCell className="flex justify-end">
-                  {order.customer.phone ?? '-'}
+                  {getOrderDetailsQuery.data.customer.phone ?? '-'}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="text-muted-foreground">E-mail</TableCell>
                 <TableCell className="flex justify-end">
-                  {order.customer.email}
+                  {getOrderDetailsQuery.data.customer.email}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -80,7 +75,7 @@ export function OrderDetails(props: OrderDetailsProps) {
                   Realizado há
                 </TableCell>
                 <TableCell className="flex justify-end">
-                  {formatDistanceToNow(order.createdAt, {
+                  {formatDistanceToNow(getOrderDetailsQuery.data.createdAt, {
                     locale: ptBR,
                     addSuffix: true,
                   })}
@@ -99,24 +94,15 @@ export function OrderDetails(props: OrderDetailsProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {order.orderItems.map((item) => (
+              {getOrderDetailsQuery.data.orderItems.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell>{item.product.name}</TableCell>
                   <TableCell className="text-right">{item.quantity}</TableCell>
                   <TableCell className="text-right">
-                    {(item.priceInCents / 100).toLocaleString('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
-                    })}
+                    {currencyFormat(item.priceInCents / 100)}
                   </TableCell>
                   <TableCell className="text-right">
-                    {((item.priceInCents * item.quantity) / 100).toLocaleString(
-                      'pt-BR',
-                      {
-                        style: 'currency',
-                        currency: 'BRL',
-                      },
-                    )}
+                    {currencyFormat((item.priceInCents * item.quantity) / 100)}
                   </TableCell>
                 </TableRow>
               ))}
@@ -125,17 +111,13 @@ export function OrderDetails(props: OrderDetailsProps) {
               <TableRow>
                 <TableCell colSpan={3}>Total do pedido</TableCell>
                 <TableCell className="text-right font-medium">
-                  {(order.totalInCents / 100).toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  })}
+                  {currencyFormat(getOrderDetailsQuery.data.totalInCents / 100)}
                 </TableCell>
               </TableRow>
             </TableFooter>
           </Table>
         </div>
       )}
-      {isLoading && <OrderDetailsSkeleton />}
     </DialogContent>
   )
 }

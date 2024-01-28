@@ -1,13 +1,20 @@
+import { useQuery } from '@tanstack/react-query'
+
 import { api } from '@/lib/axios'
+import type { OrderStatus } from '@/types/order-status'
 
 export interface GetOrderDetailsParams {
   orderId: string
 }
 
+interface GetOrderDetailsQueryParams extends GetOrderDetailsParams {
+  open?: boolean
+}
+
 export interface GetOrderDetailsResponse {
   id: string
   createdAt: Date
-  status: 'pending' | 'canceled' | 'processing' | 'delivering' | 'delivered'
+  status: OrderStatus
   totalInCents: number
   customer: {
     name: string
@@ -24,9 +31,17 @@ export interface GetOrderDetailsResponse {
   }[]
 }
 
-export async function getOrderDetails(params: GetOrderDetailsParams) {
+async function getOrderDetails(params: GetOrderDetailsParams) {
   const response = await api.get<GetOrderDetailsResponse>(
     `/orders/${params.orderId}`,
   )
   return response.data
+}
+
+export function useGetOrderDetailsQuery(params: GetOrderDetailsQueryParams) {
+  return useQuery({
+    queryKey: ['order', params.orderId],
+    queryFn: () => getOrderDetails({ orderId: params.orderId }),
+    enabled: params.open ?? true,
+  })
 }
