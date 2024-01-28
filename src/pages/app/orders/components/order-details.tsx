@@ -20,7 +20,7 @@ import {
 import { currencyFormat } from '@/lib/format'
 
 import { OrderDetailsSkeleton } from './order-details-skeleton'
-import { OrderStatus } from './order-status'
+import { OrderStatusTypes } from './order-status'
 
 export interface OrderDetailsProps {
   orderId: string

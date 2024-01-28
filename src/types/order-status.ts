@@ -1,4 +1,4 @@
-export type OrderStatus =
+export type OrderStatusTypes =
   | 'pending'
   | 'canceled'
   | 'processing'
@@ -11,4 +11,16 @@ export enum OrderStatusMap {
   processing = 'Em preparo',
   delivering = 'Em entrega',
   delivered = 'Entregue',
+}
+
+export enum NextStepOrderStatus {
+  pending = 'processing',
+  processing = 'delivering',
+  delivering = 'delivered',
+}
+
+export enum NextStepOrderStatusText {
+  pending = 'Aprovar',
+  processing = 'Em entrega',
+  delivering = 'Entregue',
 }

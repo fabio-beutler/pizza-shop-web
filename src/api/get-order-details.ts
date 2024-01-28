@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { api } from '@/lib/axios'
-import type { OrderStatus } from '@/types/order-status'
+import type { OrderStatusTypes } from '@/types/order-status'
 
 export interface GetOrderDetailsParams {
   orderId: string
@@ -14,7 +14,7 @@ interface GetOrderDetailsQueryParams extends GetOrderDetailsParams {
 export interface GetOrderDetailsResponse {
   id: string
   createdAt: Date
-  status: OrderStatus
+  status: OrderStatusTypes
   totalInCents: number
   customer: {
     name: string

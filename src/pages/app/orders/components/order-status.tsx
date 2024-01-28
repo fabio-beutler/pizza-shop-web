@@ -1,9 +1,9 @@
 import { cva } from 'class-variance-authority'
 
-import { type OrderStatus, OrderStatusMap } from '@/types/order-status'
+import { OrderStatusMap, OrderStatusTypes } from '@/types/order-status'
 
 interface OrderStatusProps {
-  status: OrderStatus
+  status: OrderStatusTypes
 }
 
 const orderStatusIconVariants = cva('size-2 rounded-full', {
