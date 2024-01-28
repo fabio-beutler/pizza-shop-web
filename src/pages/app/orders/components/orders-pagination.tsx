@@ -57,10 +57,6 @@ export function OrdersPagination({
       </span>
 
       <div className="flex items-center gap-6 lg:gap-8">
-        {/* <div className="min-w-fit text-sm font-medium">
-          Página {currentPage} de {totalPages}
-        </div> */}
-
         <Pagination>
           <PaginationContent>
             <PaginationItem>
