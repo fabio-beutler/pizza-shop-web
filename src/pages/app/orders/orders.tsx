@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import { getOrders } from '@/api/get-orders'
+import { useGetOrdersQuery } from '@/api/get-orders'
+import { OrderStatusMap } from '@/types/order-status'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/ui/table'
 
 import {
@@ -13,25 +13,29 @@ import {
   OrderTableSkeleton,
 } from './components'
 
+const searchOrderFiltersSchema = z
+  .object({
+    orderId: z.string().optional(),
+    customerName: z.string().optional(),
+    status: z.enum(['all', ...Object.keys(OrderStatusMap)]).optional(),
+    page: z
+      .string()
+      .transform((page) => Number(page) - 1)
+      .default('1'),
+  })
+  .transform(({ page, ...data }) => ({
+    ...data,
+    pageIndex: page,
+  }))
+
 export function Orders() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const orderId = searchParams.get('orderId')
-  const customerName = searchParams.get('customerName')
-  const status = searchParams.get('status')
-  const pageIndex = z.coerce
-    .number()
-    .transform((page) => page - 1)
-    .parse(searchParams.get('page') || 1)
+  const searchOrderFilterQueryParams = searchOrderFiltersSchema.parse(
+    Object.fromEntries(searchParams.entries()),
+  )
 
-  const {
-    data: ordersResponse,
-    isLoading,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['orders', pageIndex, orderId, customerName, status],
-    queryFn: () => getOrders({ pageIndex, orderId, customerName, status }),
-  })
+  const getOrdersQuery = useGetOrdersQuery(searchOrderFilterQueryParams)
 
   function handlePaginate(pageIndex: number) {
     setSearchParams((prev) => {
@@ -63,19 +67,19 @@ export function Orders() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isSuccess &&
-                  ordersResponse.orders.map((order) => (
+                {getOrdersQuery.isLoading && <OrderTableSkeleton />}
+                {getOrdersQuery.isSuccess &&
+                  getOrdersQuery.data.orders.map((order) => (
                     <OrderTableRow key={order.orderId} order={order} />
                   ))}
-                {isLoading && <OrderTableSkeleton />}
               </TableBody>
             </Table>
           </div>
-          {isSuccess && (
+          {getOrdersQuery.isSuccess && (
             <OrdersPagination
-              pageIndex={ordersResponse.meta.pageIndex}
-              totalCount={ordersResponse.meta.totalCount}
-              perPage={ordersResponse.meta.perPage}
+              pageIndex={getOrdersQuery.data.meta.pageIndex}
+              totalCount={getOrdersQuery.data.meta.totalCount}
+              perPage={getOrdersQuery.data.meta.perPage}
               siblingsCount={2}
               onPageChange={handlePaginate}
             />

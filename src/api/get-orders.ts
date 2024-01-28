@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query'
+
 import { api } from '@/lib/axios'
 
 export interface GetOrdersSearchParams {
@@ -28,4 +30,11 @@ export async function getOrders(searchParams: GetOrdersSearchParams) {
   })
 
   return response.data
+}
+
+export function useGetOrdersQuery(searchParams: GetOrdersSearchParams) {
+  return useQuery({
+    queryKey: ['orders', ...Object.values(searchParams)],
+    queryFn: () => getOrders(searchParams),
+  })
 }
