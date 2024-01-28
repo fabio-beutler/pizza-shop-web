@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { useGetManagedRestaurantQuery } from '@/api/get-managed-restaurant'
-import { useUpdateStoreProfile } from '@/api/update-store-profile'
+import { useUpdateStoreProfileMutation } from '@/api/update-store-profile'
 import { Button, ButtonLoading } from '@/ui/button'
 import {
   DialogClose,
@@ -40,7 +40,7 @@ export function StoreProfileDialog(props: StoreProfileDialogProps) {
     },
   })
 
-  const updateStoreProfileMutation = useUpdateStoreProfile()
+  const updateStoreProfileMutation = useUpdateStoreProfileMutation()
 
   function handleUpdateStoreProfile(formData: StoreProfileSchema) {
     updateStoreProfileMutation.mutate(formData, {
@@ -67,24 +67,13 @@ export function StoreProfileDialog(props: StoreProfileDialogProps) {
 
       <form onSubmit={handleSubmit(handleUpdateStoreProfile)}>
         <div className="space-y-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right" htmlFor="name">
-              Nome
-            </Label>
-            <Input
-              className="col-span-3"
-              id="name"
-              autoComplete="off"
-              {...register('name')}
-            />
-            <Label className="text-right" htmlFor="description">
+          <div className="flex flex-col gap-4">
+            <Label htmlFor="name">Nome</Label>
+            <Input id="name" autoComplete="off" {...register('name')} />
+            <Label className="mt-2" htmlFor="description">
               Descrição
             </Label>
-            <Textarea
-              className="col-span-3"
-              id="description"
-              {...register('description')}
-            />
+            <Textarea id="description" {...register('description')} />
           </div>
         </div>
 
@@ -99,7 +88,7 @@ export function StoreProfileDialog(props: StoreProfileDialogProps) {
               Salvando...
             </ButtonLoading>
           )}
-          {updateStoreProfileMutation.isIdle && (
+          {!updateStoreProfileMutation.isPending && (
             <Button type="submit" variant={'success'} className="min-w-32">
               Salvar
             </Button>

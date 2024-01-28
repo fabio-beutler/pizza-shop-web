@@ -13,10 +13,11 @@ async function updateStoreProfile(body: UpdateStoreProfileBody) {
   await api.put('/profile', body)
 }
 
-export function useUpdateStoreProfile() {
+export function useUpdateStoreProfileMutation() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    mutationKey: ['update-store-profile'],
     mutationFn: updateStoreProfile,
     onSuccess: (_, variables) => {
       queryClient.setQueryData<GetManagedRestaurantResponse>(
