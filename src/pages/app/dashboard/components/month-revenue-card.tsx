@@ -1,21 +1,14 @@
-import { useQuery } from '@tanstack/react-query'
 import { DollarSign } from 'lucide-react'
 
-import { getMonthRevenue } from '@/api/get-month-revenue'
+import { useGetMonthRevenue } from '@/api/get-month-revenue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { currencyFormat } from '@/lib/format'
 
 import { MetricCardSkeleton } from './metric-card-skeleton'
 
 export function MonthRevenueCard() {
-  const {
-    data: monthRevenue,
-    isError,
-    isLoading,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['metrics', 'month-revenue'],
-    queryFn: getMonthRevenue,
-  })
+  const getMonthRevenueQuery = useGetMonthRevenue()
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -25,30 +18,26 @@ export function MonthRevenueCard() {
         <DollarSign className="size-4 text-muted-foreground" />
       </CardHeader>
       <CardContent className="space-y-1">
-        {isSuccess && (
+        {getMonthRevenueQuery.isLoading && <MetricCardSkeleton />}
+        {getMonthRevenueQuery.isSuccess && (
           <>
             <span className="text-2xl font-bold tracking-tight">
-              {(monthRevenue.receipt / 100).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              })}
+              {currencyFormat(getMonthRevenueQuery.data.receipt / 100)}
             </span>
             <p className="text-xs text-muted-foreground">
-              {monthRevenue.diffFromLastMonth >= 0 ? (
+              {getMonthRevenueQuery.data.diffFromLastMonth >= 0 ? (
                 <span className="text-emerald-500 dark:text-emerald-400">
-                  +{monthRevenue.diffFromLastMonth}%
+                  +{getMonthRevenueQuery.data.diffFromLastMonth}%
                 </span>
               ) : (
                 <span className="text-rose-500 dark:text-rose-400">
-                  {monthRevenue.diffFromLastMonth}%
+                  {getMonthRevenueQuery.data.diffFromLastMonth}%
                 </span>
               )}{' '}
               relação ao mês anterior
             </p>
           </>
         )}
-        {isLoading && <MetricCardSkeleton />}
-        {isError && <h3>Erro ao carregar</h3>}
       </CardContent>
     </Card>
   )

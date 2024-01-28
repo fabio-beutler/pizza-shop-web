@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query'
+
 import { api } from '@/lib/axios'
 
 export interface GetMonthRevenueResponse {
@@ -5,9 +7,16 @@ export interface GetMonthRevenueResponse {
   diffFromLastMonth: number
 }
 
-export async function getMonthRevenue() {
+async function getMonthRevenue() {
   const response = await api.get<GetMonthRevenueResponse>(
     '/metrics/month-receipt',
   )
   return response.data
+}
+
+export function useGetMonthRevenue() {
+  return useQuery({
+    queryKey: ['metrics', 'month-revenue'],
+    queryFn: getMonthRevenue,
+  })
 }
