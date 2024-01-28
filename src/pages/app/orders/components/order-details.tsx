@@ -3,11 +3,8 @@ import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 import { useGetOrderDetailsQuery } from '@/api/get-order-details'
-import {
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { currencyFormat } from '@/lib/format'
+import { DialogContent, DialogHeader, DialogTitle } from '@/ui/dialog'
 import {
   Table,
   TableBody,
@@ -16,11 +13,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { currencyFormat } from '@/lib/format'
+} from '@/ui/table'
 
 import { OrderDetailsSkeleton } from './order-details-skeleton'
-import { OrderStatusTypes } from './order-status'
+import { OrderStatus } from './order-status'
 
 export interface OrderDetailsProps {
   orderId: string

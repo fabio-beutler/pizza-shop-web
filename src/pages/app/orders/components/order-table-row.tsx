@@ -1,35 +1,26 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { ArrowRight, Search, X } from 'lucide-react'
 import { useState } from 'react'
 
-import { GetOrdersResponse } from '@/api/get-orders'
-import { updateOrderStatus } from '@/api/update-order-status'
-import { Button, ButtonLoading } from '@/components/ui/button'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
-import { TableCell, TableRow } from '@/components/ui/table'
+import { useUpdateOrderStatusMutation } from '@/api/update-order-status'
+import {
+  NextStepOrderStatus,
+  NextStepOrderStatusText,
+  type OrderStatusTypes,
+} from '@/types/order-status'
+import { Button, ButtonLoading } from '@/ui/button'
+import { Dialog, DialogTrigger } from '@/ui/dialog'
+import { TableCell, TableRow } from '@/ui/table'
 
 import { OrderDetails } from './order-details'
 import { OrderStatus } from './order-status'
-
-enum NextStepOrderStatus {
-  pending = 'processing',
-  processing = 'delivering',
-  delivering = 'delivered',
-}
-
-enum NextStepOrderStatusText {
-  pending = 'Aprovar',
-  processing = 'Em entrega',
-  delivering = 'Entregue',
-}
 
 export interface OrderTableRowProps {
   order: {
     orderId: string
     createdAt: Date
-    status: 'pending' | 'canceled' | 'processing' | 'delivering' | 'delivered'
+    status: OrderStatusTypes
     customerName: string
     total: number
   }
@@ -37,31 +28,14 @@ export interface OrderTableRowProps {
 
 export function OrderTableRow({ order }: OrderTableRowProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-  const queryClient = useQueryClient()
 
   const hasNextStep =
     order.status === 'pending' ||
     order.status === 'processing' ||
     order.status === 'delivering'
 
-  const updateOrderMutation = useMutation({
-    mutationKey: ['update-order-status', order.orderId],
-    mutationFn: updateOrderStatus,
-    onSuccess: async (_, { orderId, status }) => {
-      queryClient.setQueriesData<GetOrdersResponse>(
-        { queryKey: ['orders'] },
-        (cached) => {
-          if (!cached) return
-          return {
-            ...cached,
-            orders: cached.orders.map((order) => {
-              if (order.orderId !== orderId) return order
-              return { ...order, status }
-            }),
-          }
-        },
-      )
-    },
+  const updateOrderMutation = useUpdateOrderStatusMutation({
+    orderId: order.orderId,
   })
 
   return (
