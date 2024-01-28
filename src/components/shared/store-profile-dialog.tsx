@@ -1,14 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
-import {
-  getManagedRestaurant,
-  GetManagedRestaurantResponse,
-} from '@/api/get-managed-restaurant'
-import { updateStoreProfile } from '@/api/update-store-profile'
+import { useGetManagedRestaurantQuery } from '@/api/get-managed-restaurant'
+import { useUpdateStoreProfile } from '@/api/update-store-profile'
 import { Button, ButtonLoading } from '@/ui/button'
 import {
   DialogClose,
@@ -34,44 +30,30 @@ const storeProfileSchema = z.object({
 type StoreProfileSchema = z.infer<typeof storeProfileSchema>
 
 export function StoreProfileDialog(props: StoreProfileDialogProps) {
-  const queryClient = useQueryClient()
+  const getManagedRestaurantQuery = useGetManagedRestaurantQuery()
 
-  const { data: storeProfile } = useQuery({
-    queryKey: ['managed-restaurant'],
-    queryFn: getManagedRestaurant,
-    staleTime: Infinity,
-  })
-
-  const { register, handleSubmit, formState } = useForm<StoreProfileSchema>({
+  const { register, handleSubmit } = useForm<StoreProfileSchema>({
     resolver: zodResolver(storeProfileSchema),
     values: {
-      name: storeProfile?.name ?? '',
-      description: storeProfile?.description ?? '',
+      name: getManagedRestaurantQuery.data?.name ?? '',
+      description: getManagedRestaurantQuery.data?.description ?? '',
     },
   })
 
-  const { mutateAsync: updateStoreProfileFn } = useMutation({
-    mutationFn: updateStoreProfile,
-    onSuccess: (_, variables) => {
-      queryClient.setQueryData<GetManagedRestaurantResponse>(
-        ['managed-restaurant'],
-        (old) => {
-          if (old) return { ...old, ...variables }
-        },
-      )
-    },
-  })
+  const updateStoreProfileMutation = useUpdateStoreProfile()
 
-  async function handleUpdateStoreProfile(data: StoreProfileSchema) {
-    try {
-      await updateStoreProfileFn(data)
-      toast.success('Perfil da loja atualizado com sucesso')
-      props.onCloseDialog()
-    } catch {
-      toast.error(
-        'Não foi possível atualizar o perfil da loja, tente novamente mais tarde',
-      )
-    }
+  function handleUpdateStoreProfile(formData: StoreProfileSchema) {
+    updateStoreProfileMutation.mutate(formData, {
+      onSuccess: () => {
+        toast.success('Perfil da loja atualizado com sucesso')
+        props.onCloseDialog()
+      },
+      onError: () => {
+        toast.error(
+          'Não foi possível atualizar o perfil da loja, tente novamente mais tarde',
+        )
+      },
+    })
   }
 
   return (
@@ -112,11 +94,12 @@ export function StoreProfileDialog(props: StoreProfileDialogProps) {
               Cancelar
             </Button>
           </DialogClose>
-          {formState.isSubmitting ? (
+          {updateStoreProfileMutation.isPending && (
             <ButtonLoading variant={'success'} className="min-w-32">
               Salvando...
             </ButtonLoading>
-          ) : (
+          )}
+          {updateStoreProfileMutation.isIdle && (
             <Button type="submit" variant={'success'} className="min-w-32">
               Salvar
             </Button>
