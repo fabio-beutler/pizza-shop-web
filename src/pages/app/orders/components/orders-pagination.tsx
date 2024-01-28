@@ -10,7 +10,7 @@ import {
   PaginationPrevious,
 } from '@/ui/pagination'
 
-export interface PaginationImpProps {
+export interface OrdersPaginationProps {
   pageIndex: number
   totalCount: number
   perPage: number
@@ -26,13 +26,13 @@ function generatePagesArray(from: number, to: number) {
     .filter((page) => page > 0)
 }
 
-export function PaginationBottom({
+export function OrdersPagination({
   pageIndex,
   totalCount,
   perPage,
   siblingsCount = 1,
   onPageChange,
-}: PaginationImpProps) {
+}: OrdersPaginationProps) {
   const currentPage = pageIndex + 1
   const totalPages = Math.ceil(totalCount / perPage) || 1
   const lastPage = Math.floor(totalCount / perPage)

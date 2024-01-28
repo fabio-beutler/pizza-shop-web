@@ -4,10 +4,10 @@ import { useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { getOrders } from '@/api/get-orders'
-import { PaginationBottom } from '@/components/shared/pagination'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/ui/table'
 
 import {
+  OrdersPagination,
   OrderTableFilters,
   OrderTableRow,
   OrderTableSkeleton,
@@ -72,7 +72,7 @@ export function Orders() {
             </Table>
           </div>
           {isSuccess && (
-            <PaginationBottom
+            <OrdersPagination
               pageIndex={ordersResponse.meta.pageIndex}
               totalCount={ordersResponse.meta.totalCount}
               perPage={ordersResponse.meta.perPage}
