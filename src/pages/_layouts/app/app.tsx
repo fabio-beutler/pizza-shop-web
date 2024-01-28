@@ -27,6 +27,7 @@ export function AppLayout() {
       api.interceptors.response.eject(interceptorId)
     }
   }, [navigate])
+
   return (
     <div className="flex min-h-screen flex-col antialiased">
       <Header />
