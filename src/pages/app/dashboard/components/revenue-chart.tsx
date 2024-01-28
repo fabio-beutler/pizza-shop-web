@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import { subDays } from 'date-fns'
 import { Loader2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -14,7 +13,7 @@ import {
 } from 'recharts'
 import colors from 'tailwindcss/colors'
 
-import { getDailyRevenue } from '@/api/get-daily-revenue-in-period'
+import { useGetDailyRevenueQuery } from '@/api/get-daily-revenue-in-period'
 import {
   Card,
   CardContent,
@@ -24,6 +23,7 @@ import {
 } from '@/components/ui/card'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { Label } from '@/components/ui/label'
+import { currencyFormat } from '@/lib/format'
 
 export function RevenueChart() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -31,24 +31,19 @@ export function RevenueChart() {
     to: new Date(),
   })
 
-  const {
-    data: dailyRevenueInPeriod,
-    isLoading,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['metrics', 'daily-revenue-in-period', dateRange],
-    queryFn: () =>
-      getDailyRevenue({ from: dateRange?.from, to: dateRange?.to }),
+  const getDailyRevenueQuery = useGetDailyRevenueQuery({
+    from: dateRange?.from,
+    to: dateRange?.to,
   })
 
   const chartData = useMemo(() => {
-    if (!dailyRevenueInPeriod) return []
+    if (!getDailyRevenueQuery.data) return []
 
-    return dailyRevenueInPeriod.map((dailyRevenue) => ({
+    return getDailyRevenueQuery.data.map((dailyRevenue) => ({
       date: dailyRevenue.date,
       receipt: dailyRevenue.receipt / 100,
     }))
-  }, [dailyRevenueInPeriod])
+  }, [getDailyRevenueQuery.data])
 
   return (
     <Card className="col-span-6">
@@ -65,7 +60,12 @@ export function RevenueChart() {
           <DateRangePicker date={dateRange} onDateChange={setDateRange} />
         </div>
       </CardHeader>
-      {isSuccess && (
+      {getDailyRevenueQuery.isLoading && (
+        <div className="flex h-[240px] w-full items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        </div>
+      )}
+      {getDailyRevenueQuery.isSuccess && (
         <CardContent>
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={chartData} style={{ fontSize: 12 }}>
@@ -76,12 +76,7 @@ export function RevenueChart() {
                 axisLine={false}
                 tickLine={false}
                 width={80}
-                tickFormatter={(value: number) =>
-                  value.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  })
-                }
+                tickFormatter={(value: number) => currencyFormat(value)}
               />
               <CartesianGrid vertical={false} className="stroke-muted" />
               <Line
@@ -98,10 +93,7 @@ export function RevenueChart() {
                 }}
                 animationDuration={1000}
                 formatter={(value: number) => [
-                  value.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                  }),
+                  currencyFormat(value),
                   'Receita',
                 ]}
                 labelFormatter={(value: string) => `Dia: ${value}`}
@@ -109,11 +101,6 @@ export function RevenueChart() {
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
-      )}
-      {isLoading && (
-        <div className="flex h-[240px] w-full items-center justify-center">
-          <Loader2 className="size-8 animate-spin text-muted-foreground" />
-        </div>
       )}
     </Card>
   )

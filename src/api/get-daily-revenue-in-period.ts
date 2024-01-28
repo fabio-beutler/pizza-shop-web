@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query'
+
 import { api } from '@/lib/axios'
 
 export type GetDailyRevenueResponse = {
@@ -14,11 +16,15 @@ export async function getDailyRevenue(params: GetDailyRevenueParams) {
   const response = await api.get<GetDailyRevenueResponse>(
     '/metrics/daily-receipt-in-period',
     {
-      params: {
-        from: params.from,
-        to: params.to,
-      },
+      params,
     },
   )
   return response.data
+}
+
+export function useGetDailyRevenueQuery(params: GetDailyRevenueParams) {
+  return useQuery({
+    queryKey: ['metrics', 'daily-revenue-in-period', params],
+    queryFn: () => getDailyRevenue(params),
+  })
 }
