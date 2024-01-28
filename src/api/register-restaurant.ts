@@ -1,3 +1,5 @@
+import { useMutation } from '@tanstack/react-query'
+
 import { api } from '@/lib/axios'
 
 export interface RegisterRestaurantBody {
@@ -9,4 +11,10 @@ export interface RegisterRestaurantBody {
 
 export async function registerRestaurant(body: RegisterRestaurantBody) {
   await api.post('/restaurants', body)
+}
+
+export function useRegisterRestaurantMutation() {
+  return useMutation({
+    mutationFn: registerRestaurant,
+  })
 }
