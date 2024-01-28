@@ -4,6 +4,7 @@ import { ArrowRight, Search, X } from 'lucide-react'
 import { useState } from 'react'
 
 import { useUpdateOrderStatusMutation } from '@/api/update-order-status'
+import { currencyFormat } from '@/lib/format'
 import {
   NextStepOrderStatus,
   NextStepOrderStatusText,
@@ -29,14 +30,24 @@ export interface OrderTableRowProps {
 export function OrderTableRow({ order }: OrderTableRowProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
-  const hasNextStep =
-    order.status === 'pending' ||
-    order.status === 'processing' ||
-    order.status === 'delivering'
-
   const updateOrderMutation = useUpdateOrderStatusMutation({
     orderId: order.orderId,
   })
+
+  const hasNextStep =
+    ['pending', 'processing', 'delivering'].includes(order.status) &&
+    !updateOrderMutation.isPending
+
+  const isLoadingNextStep =
+    Object.values(NextStepOrderStatus).includes(
+      updateOrderMutation.variables?.status as NextStepOrderStatus,
+    ) && updateOrderMutation.isPending
+
+  const isCancelingOrder =
+    updateOrderMutation.variables?.status === 'canceled' &&
+    updateOrderMutation.isPending
+
+  const nextStepOrderStatus = order.status as keyof typeof NextStepOrderStatus
 
   return (
     <TableRow>
@@ -66,49 +77,32 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
       </TableCell>
       <TableCell className="font-medium">{order.customerName}</TableCell>
       <TableCell className="font-medium">
-        {(order.total / 100).toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        })}
+        {currencyFormat(order.total / 100)}
       </TableCell>
       <TableCell>
-        {hasNextStep &&
-          (Object.values(NextStepOrderStatus).includes(
-            updateOrderMutation.variables?.status as NextStepOrderStatus,
-          ) && updateOrderMutation.isPending ? (
-            <ButtonLoading disabled variant="outline" size="xs">
-              {
-                NextStepOrderStatusText[
-                  order.status as keyof typeof NextStepOrderStatus
-                ]
-              }
-            </ButtonLoading>
-          ) : (
-            <Button
-              onClick={() =>
-                updateOrderMutation.mutate({
-                  orderId: order.orderId,
-                  status:
-                    NextStepOrderStatus[
-                      order.status as keyof typeof NextStepOrderStatus
-                    ],
-                })
-              }
-              variant="outline"
-              size="xs"
-            >
-              <ArrowRight className="mr-2 size-3" />
-              {
-                NextStepOrderStatusText[
-                  order.status as keyof typeof NextStepOrderStatus
-                ]
-              }
-            </Button>
-          ))}
+        {isLoadingNextStep && (
+          <ButtonLoading disabled variant="outline" size="xs">
+            {NextStepOrderStatusText[nextStepOrderStatus]}
+          </ButtonLoading>
+        )}
+        {hasNextStep && (
+          <Button
+            onClick={() =>
+              updateOrderMutation.mutate({
+                orderId: order.orderId,
+                status: NextStepOrderStatus[nextStepOrderStatus],
+              })
+            }
+            variant="outline"
+            size="xs"
+          >
+            <ArrowRight className="mr-2 size-3" />
+            {NextStepOrderStatusText[nextStepOrderStatus]}
+          </Button>
+        )}
       </TableCell>
       <TableCell>
-        {updateOrderMutation.variables?.status === 'canceled' &&
-        updateOrderMutation.isPending ? (
+        {isCancelingOrder ? (
           <ButtonLoading disabled variant="ghost" size="xs">
             Cancelando
           </ButtonLoading>
