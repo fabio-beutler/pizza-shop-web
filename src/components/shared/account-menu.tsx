@@ -1,13 +1,11 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
 import { Building, ChevronDown, LogOut } from 'lucide-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
-import { getManagedRestaurant } from '@/api/get-managed-restaurant'
-import { getProfile } from '@/api/get-profile'
-import { signOut } from '@/api/sign-out'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import { useGetManagedRestaurantQuery } from '@/api/get-managed-restaurant'
+import { useGetProfileQuery } from '@/api/get-profile'
+import { useSignOutMutation } from '@/api/sign-out'
+import { Button } from '@/ui/button'
+import { Dialog, DialogTrigger } from '@/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,36 +13,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@/ui/dropdown-menu'
+import { Skeleton } from '@/ui/skeleton'
 
 import { StoreProfileDialog } from './store-profile-dialog'
 
 export function AccountMenu() {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
 
-  const navigate = useNavigate()
+  const getProfileQuery = useGetProfileQuery()
 
-  const { data: profile, isLoading: isLoadingProfile } = useQuery({
-    queryKey: ['profile'],
-    queryFn: getProfile,
-    staleTime: Infinity,
-  })
+  const getManagedRestaurantQuery = useGetManagedRestaurantQuery()
 
-  const { data: storeProfile, isLoading: isLoadingStoreProfile } = useQuery({
-    queryKey: ['managed-restaurant'],
-    queryFn: getManagedRestaurant,
-    staleTime: Infinity,
-  })
+  const signOutMutation = useSignOutMutation()
 
-  const { mutateAsync: signOutMutation, isPending: isSigningOut } = useMutation(
-    {
-      mutationFn: signOut,
-      onSuccess: () => {
-        navigate('/sign-in', { replace: true })
-      },
-    },
-  )
+  function handleSignOut(event: Event) {
+    event.preventDefault()
+    if (signOutMutation.isPending) return
+    signOutMutation.mutate()
+  }
 
   return (
     <Dialog open={accountMenuOpen} onOpenChange={setAccountMenuOpen}>
@@ -54,26 +41,27 @@ export function AccountMenu() {
             variant="outline"
             className="flex select-none items-center gap-2"
           >
-            {isLoadingStoreProfile ? (
+            {getManagedRestaurantQuery.isLoading && (
               <Skeleton className="h-4 w-32" />
-            ) : (
-              storeProfile?.name
             )}
+            {getManagedRestaurantQuery.isSuccess &&
+              getManagedRestaurantQuery.data.name}
             <ChevronDown className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel className="flex flex-col">
-            {isLoadingProfile ? (
+            {getProfileQuery.isLoading && (
               <div className="space-y-1.5">
                 <Skeleton className="h-4 w-40" />
                 <Skeleton className="h-3 w-36" />
               </div>
-            ) : (
+            )}
+            {getProfileQuery.isSuccess && (
               <>
-                <span>{profile?.name}</span>
+                <span>{getProfileQuery.data.name}</span>
                 <span className="text-xs font-normal text-muted-foreground">
-                  {profile?.email}
+                  {getProfileQuery.data.email}
                 </span>
               </>
             )}
@@ -86,15 +74,12 @@ export function AccountMenu() {
             </DropdownMenuItem>
           </DialogTrigger>
           <DropdownMenuItem
-            onSelect={(event) => {
-              event.preventDefault()
-              signOutMutation()
-            }}
-            disabled={isSigningOut}
+            onSelect={handleSignOut}
+            disabled={signOutMutation.isPending}
             className="text-rose-500 dark:text-rose-400"
           >
             <LogOut className="mr-2 size-4" />
-            {isSigningOut ? 'Saindo...' : 'Sair'}
+            {signOutMutation.isPending ? 'Saindo...' : 'Sair'}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
