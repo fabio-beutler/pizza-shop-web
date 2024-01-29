@@ -79,7 +79,7 @@ export function SignUp() {
                 autoComplete="off"
                 id="restaurantName"
                 type="text"
-                errorMessage={formState.errors.restaurantName?.message || ' '}
+                errorMessage={formState.errors.restaurantName?.message ?? ''}
                 {...register('restaurantName')}
               />
             </div>
@@ -89,7 +89,7 @@ export function SignUp() {
                 autoComplete="name"
                 id="managerName"
                 type="text"
-                errorMessage={formState.errors.managerName?.message || ' '}
+                errorMessage={formState.errors.managerName?.message ?? ''}
                 {...register('managerName')}
               />
             </div>
@@ -99,7 +99,7 @@ export function SignUp() {
                 autoComplete="email"
                 id="email"
                 type="email"
-                errorMessage={formState.errors.email?.message || ' '}
+                errorMessage={formState.errors.email?.message ?? ''}
                 {...register('email')}
               />
             </div>
@@ -109,7 +109,7 @@ export function SignUp() {
                 autoComplete="tel"
                 id="phone"
                 type="tel"
-                errorMessage={formState.errors.phone?.message || ' '}
+                errorMessage={formState.errors.phone?.message ?? ''}
                 {...register('phone')}
               />
             </div>

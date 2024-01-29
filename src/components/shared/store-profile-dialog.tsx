@@ -67,13 +67,24 @@ export function StoreProfileDialog(props: StoreProfileDialogProps) {
 
       <form onSubmit={handleSubmit(handleUpdateStoreProfile)}>
         <div className="space-y-4 py-4">
-          <div className="flex flex-col gap-4">
-            <Label htmlFor="name">Nome</Label>
-            <Input id="name" autoComplete="off" {...register('name')} />
-            <Label className="mt-2" htmlFor="description">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right" htmlFor="name">
+              Nome
+            </Label>
+            <Input
+              id="name"
+              autoComplete="off"
+              className="col-span-3"
+              {...register('name')}
+            />
+            <Label className="mt-3 self-start text-right" htmlFor="description">
               Descrição
             </Label>
-            <Textarea id="description" {...register('description')} />
+            <Textarea
+              id="description"
+              className="col-span-3"
+              {...register('description')}
+            />
           </div>
         </div>
 
