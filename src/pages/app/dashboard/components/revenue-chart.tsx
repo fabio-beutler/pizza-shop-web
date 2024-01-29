@@ -55,10 +55,10 @@ export function RevenueChart() {
           <CardDescription>Receita diária no período</CardDescription>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Label>Período</Label>
+        <Label className="flex items-center gap-3">
+          Período
           <DateRangePicker date={dateRange} onDateChange={setDateRange} />
-        </div>
+        </Label>
       </CardHeader>
       {getDailyRevenueQuery.isLoading && (
         <div className="flex h-[240px] w-full items-center justify-center">
