@@ -11,7 +11,10 @@ import { Input } from '@/ui/input'
 import { Label } from '@/ui/label'
 
 const signInFormSchema = z.object({
-  email: z.string().email(),
+  email: z
+    .string()
+    .min(1, { message: 'E-mail é obrigatório' })
+    .email({ message: 'E-mail inválido' }),
 })
 
 const signInSearchQueryParamsSchema = signInFormSchema.merge(
@@ -75,6 +78,7 @@ export function SignIn() {
                 autoComplete="email"
                 id="email"
                 type="email"
+                errorMessage={formState.errors.email?.message ?? ''}
                 {...register('email')}
               />
             </div>
