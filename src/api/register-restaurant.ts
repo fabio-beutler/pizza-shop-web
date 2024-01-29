@@ -9,7 +9,7 @@ export interface RegisterRestaurantBody {
   phone: string
 }
 
-export async function registerRestaurant(body: RegisterRestaurantBody) {
+async function registerRestaurant(body: RegisterRestaurantBody) {
   await api.post('/restaurants', body)
 }
 

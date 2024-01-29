@@ -16,7 +16,7 @@ interface UpdateOrderStatusParams {
   status: keyof typeof OrderStatusPatchPath
 }
 
-export async function updateOrderStatus(params: UpdateOrderStatusParams) {
+async function updateOrderStatus(params: UpdateOrderStatusParams) {
   await api.patch(
     `/orders/${params.orderId}/${OrderStatusPatchPath[params.status]}`,
   )

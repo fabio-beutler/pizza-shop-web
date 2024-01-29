@@ -24,7 +24,7 @@ export interface GetOrdersResponse {
   }
 }
 
-export async function getOrders(searchParams: GetOrdersSearchParams) {
+async function getOrders(searchParams: GetOrdersSearchParams) {
   const response = await api.get<GetOrdersResponse>('/orders', {
     params: searchParams,
   })

@@ -12,7 +12,7 @@ interface GetDailyRevenueParams {
   to?: Date
 }
 
-export async function getDailyRevenue(params: GetDailyRevenueParams) {
+async function getDailyRevenue(params: GetDailyRevenueParams) {
   const response = await api.get<GetDailyRevenueResponse>(
     '/metrics/daily-receipt-in-period',
     {
