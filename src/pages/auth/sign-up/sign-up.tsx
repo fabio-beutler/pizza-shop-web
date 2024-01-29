@@ -73,46 +73,49 @@ export function SignUp() {
             </p>
           </div>
           <form onSubmit={handleSubmit(handleSignUp)} className="space-y-4">
-            <div className="space-y-1">
-              <Label htmlFor="restaurantName">Nome do estabelecimento</Label>
-              <Input
-                autoComplete="off"
-                id="restaurantName"
-                type="text"
-                errorMessage={formState.errors.restaurantName?.message ?? ''}
-                {...register('restaurantName')}
-              />
+            <div className="space-y-2">
+              <div className="space-y-1">
+                <Label htmlFor="restaurantName">Nome do estabelecimento</Label>
+                <Input
+                  autoComplete="off"
+                  id="restaurantName"
+                  type="text"
+                  errorMessage={formState.errors.restaurantName?.message ?? ''}
+                  {...register('restaurantName')}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="managerName">Seu nome</Label>
+                <Input
+                  autoComplete="name"
+                  id="managerName"
+                  type="text"
+                  errorMessage={formState.errors.managerName?.message ?? ''}
+                  {...register('managerName')}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="email">Seu e-mail</Label>
+                <Input
+                  autoComplete="email"
+                  id="email"
+                  type="email"
+                  errorMessage={formState.errors.email?.message ?? ''}
+                  {...register('email')}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="phone">Seu celular</Label>
+                <Input
+                  autoComplete="tel"
+                  id="phone"
+                  type="tel"
+                  errorMessage={formState.errors.phone?.message ?? ''}
+                  {...register('phone')}
+                />
+              </div>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="managerName">Seu nome</Label>
-              <Input
-                autoComplete="name"
-                id="managerName"
-                type="text"
-                errorMessage={formState.errors.managerName?.message ?? ''}
-                {...register('managerName')}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="email">Seu e-mail</Label>
-              <Input
-                autoComplete="email"
-                id="email"
-                type="email"
-                errorMessage={formState.errors.email?.message ?? ''}
-                {...register('email')}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="phone">Seu celular</Label>
-              <Input
-                autoComplete="tel"
-                id="phone"
-                type="tel"
-                errorMessage={formState.errors.phone?.message ?? ''}
-                {...register('phone')}
-              />
-            </div>
+
             <Button
               disabled={formState.isSubmitting}
               className="w-full"
